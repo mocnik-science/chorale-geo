@@ -128,4 +128,4 @@ instance Coordinates CoordinatesWGS84 where
 -- --== COORDINATE TRANSFORMATIONS
 
 transformWGS84toCartesian :: Double -> CoordinatesWGS84 -> CoordinatesCartesian
-transformWGS84toCartesian k (CoordinatesWGS84 (lon, lat)) = CoordinatesCartesian (128 / pi * 2**k * (degreeToRad lon + pi), 128 / pi * 2**k * (pi - log (tan (pi / 4 + degreeToRad lat / 2))))
+transformWGS84toCartesian k (CoordinatesWGS84 (lat, lon)) = CoordinatesCartesian (128 / pi * 2**k * (degreeToRad lon + pi), 128 / pi * 2**k * (pi - log (tan (pi / 4 + degreeToRad lat / 2))))
