@@ -1,5 +1,5 @@
 name:           chorale-geo
-version:        0.1.0
+version:        0.1.1
 homepage:       https://github.com/mocnik-science/chorale-geo
 bug-reports:    https://github.com/mocnik-science/chorale-geo/issues
 synopsis:       A module containing basic geo functions

@@ -22,7 +22,9 @@ module Chorale.Geo.Coordinates (
     -- * Coordinates
     Coordinates(..),
     CoordinatesCartesian(..),
-    CoordinatesWGS84(..)) where
+    CoordinatesWGS84(..),
+    -- * Coordinate Transformations
+    transformWGS84toCartesian) where
 
 import Chorale.Common
 
@@ -59,11 +61,10 @@ class (Ord c, Eq c, Show c) => Coordinates c where
   distance :: c -> c -> Double
   azimuth :: c -> c -> Double
 
+-- --== COORDINATES CARTESIAN
+
 -- | Cartesian coordinates
 newtype CoordinatesCartesian = CoordinatesCartesian (Double, Double) deriving (Ord, Eq, Show, Generic)
-
--- | Geographic coordinates (WGS84)
-newtype CoordinatesWGS84 = CoordinatesWGS84 (Double, Double) deriving (Ord, Eq, Show, Generic)
 
 instance B.Binary CoordinatesCartesian
 
@@ -81,6 +82,11 @@ instance Coordinates (Double, Double) where
     toTuple = id
     distance = curry $ uncurry distance . map12 CoordinatesCartesian
     azimuth = curry $ uncurry azimuth . map12 CoordinatesCartesian
+
+-- --== COORDINATES WGS84
+
+-- | Geographic coordinates (WGS84)
+newtype CoordinatesWGS84 = CoordinatesWGS84 (Double, Double) deriving (Ord, Eq, Show, Generic)
 
 instance B.Binary CoordinatesWGS84
 
@@ -118,3 +124,8 @@ instance Coordinates CoordinatesWGS84 where
                     cos2sm = sqrt cos2a - 2 * sin u1 * sin u2 / cos2a
                     c = f / 16 * cos2a * (4 + f * (4 - 3 * cos2a))
                     x' = l + (1 - c) * f * sina * (s + c * sins * (cos2sm + c * coss * (-1 + 2 * cos2sm**2)))
+
+-- --== COORDINATE TRANSFORMATIONS
+
+transformWGS84toCartesian :: Double -> CoordinatesWGS84 -> CoordinatesCartesian
+transformWGS84toCartesian k (CoordinatesWGS84 (lon, lat)) = CoordinatesCartesian (128 / pi * 2**k * (degreeToRad lon + pi), 128 / pi * 2**k * (pi - log (tan (pi / 4 + degreeToRad lat / 2))))
